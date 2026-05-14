@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DASHBOARD - ACOMPANHAMENTO COMMODITIES</title>
+  <script>
+    // SheetJS loader with fallback CDN. Keeps the dashboard from freezing silently.
+    window.__xlsxReady = new Promise((resolve, reject) => {
+      const urls = [
+        'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+        'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js'
+      ];
+      let i = 0;
+      function loadNext(){
+        if(window.XLSX) return resolve();
+        if(i >= urls.length) return reject(new Error('Biblioteca XLSX não carregou'));
+        const s = document.createElement('script');
+        s.src = urls[i++];
+        s.onload = () => window.XLSX ? resolve() : loadNext();
+        s.onerror = loadNext;
+        document.head.appendChild(s);
+      }
+      loadNext();
+    });
+  </script>
+  <style>
+    :root{--dsv:#002664;--dsv2:#003b86;--blue:#0f55a3;--bg:#f3f7fc;--card:#fff;--ink:#061a3c;--muted:#63728a;--line:#dbe4ef;--good:#0a7f51;--bad:#b42318;--soft:#eaf2ff;--shadow:0 20px 45px rgba(0,38,100,.08)}
+    *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#f7fbff 0%,#edf4fc 100%);color:var(--ink);font-family:Inter,Segoe UI,Arial,sans-serif;font-size:14px} .wrap{padding:32px;max-width:1800px;margin:auto}
+    .top{display:grid;grid-template-columns:1fr 420px;gap:24px;align-items:stretch}.hero{background:radial-gradient(circle at 92% 10%,rgba(255,255,255,.14) 0 22%,transparent 23%),linear-gradient(135deg,var(--dsv),#064796);color:#fff;border-radius:28px;padding:34px 38px;box-shadow:var(--shadow);min-height:170px}.brand{font-size:13px;font-weight:900;letter-spacing:4px;margin-bottom:14px}.hero h1{font-size:36px;line-height:1.05;margin:0 0 18px;font-weight:900;letter-spacing:.3px}.chips{display:flex;gap:10px;flex-wrap:wrap}.chip{background:#fff;color:var(--dsv);padding:8px 15px;border-radius:999px;font-weight:900;font-size:12px}.data-card{background:var(--card);border:1px solid var(--line);border-radius:28px;padding:28px;box-shadow:var(--shadow)}.data-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.data-card h2{margin:0 0 14px;font-size:20px}.status{font-size:12px;color:var(--muted);text-align:right;max-width:210px}.btn{border:0;background:var(--dsv);color:#fff;border-radius:14px;padding:13px 18px;font-weight:900;cursor:pointer}.btn.secondary{background:#fff;color:var(--dsv);border:1px solid #c9d6e5}.file-inputs{display:none;margin-top:14px;gap:8px;flex-direction:column}.file-inputs label{font-size:12px;color:var(--muted);font-weight:800}.controls{display:flex;gap:12px;flex-wrap:wrap;margin:22px 0}.controls select,.controls input{border:1px solid #c9d6e5;background:#fff;color:#071c3d;border-radius:14px;padding:13px 16px;font-weight:800;min-width:190px}.controls input{min-width:300px}.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:18px}.kpi{background:#fff;border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:0 14px 35px rgba(0,38,100,.05)}.kpi .label{color:var(--muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.5px}.kpi .value{font-size:29px;font-weight:950;margin:9px 0 4px}.kpi .sub{font-size:12px;color:var(--muted);font-weight:700}.delta.up{color:var(--good)}.delta.down{color:var(--bad)}.grid{display:grid;grid-template-columns:2fr 1.05fr;gap:18px}.card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:var(--shadow);min-height:330px}.card h3{margin:0;font-size:18px}.card-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:14px}.note{font-size:12px;color:var(--muted)}.chart{width:100%;height:330px;position:relative}.bar-row{display:grid;grid-template-columns:52px 1fr 90px;gap:12px;align-items:center;margin:10px 0}.bar-label{font-size:12px;color:var(--muted);font-weight:900}.bar-track{height:14px;border-radius:999px;background:#edf3fa;overflow:hidden}.bar{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--dsv),var(--blue))}.bar.alt{background:linear-gradient(90deg,#95b7df,#4d83be)}.bar-val{text-align:right;font-size:12px;font-weight:900}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:12px 10px;border-bottom:1px solid #edf2f7;text-align:left}.table th{font-size:11px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}.table td{font-size:13px;font-weight:700}.split{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.empty{height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:800;text-align:center;padding:40px}.svgchart text{font-family:Inter,Segoe UI,Arial,sans-serif}.tooltip{position:absolute;background:#061a3c;color:#fff;border-radius:10px;padding:8px 10px;font-size:12px;pointer-events:none;display:none;z-index:5;box-shadow:0 12px 25px rgba(0,0,0,.18)}
+    @media(max-width:1200px){.top,.grid,.split{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(3,1fr)}}@media(max-width:760px){.wrap{padding:16px}.hero h1{font-size:25px}.kpis{grid-template-columns:1fr}.controls select,.controls input{width:100%;min-width:0}.top{gap:14px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <section class="top">
+    <div class="hero"><div class="brand">DSV</div><h1>DASHBOARD - ACOMPANHAMENTO COMMODITIES</h1><div class="chips"><span class="chip">TEUs</span><span class="chip">ETA</span><span class="chip">COC</span><span class="chip">2025 x 2026</span></div></div>
+    <div class="data-card"><div class="data-head"><div><h2>Base de dados</h2><button class="btn" id="reloadBtn">Atualizar dashboard</button> <button class="btn secondary" id="manualBtn">Selecionar arquivos</button></div><div class="status" id="status">Carregando...</div></div><div class="file-inputs" id="fileBox"><label>2025: <input type="file" id="file2025" accept=".xlsx,.xls" /></label><label>2026: <input type="file" id="file2026" accept=".xlsx,.xls" /></label><button class="btn" id="loadManual">Carregar arquivos selecionados</button></div></div>
+  </section>
+  <section class="controls"><select id="view"><option value="compare">Comparativo 2025 x 2026</option><option value="2025">Somente 2025</option><option value="2026">Somente 2026</option></select><select id="period"><option value="ytdComparable">YTD comparável até última semana 2026</option><option value="all">Ano completo / base completa</option></select><select id="quarter"><option value="all">Todos os quarters</option><option value="Q1">Q1</option><option value="Q2">Q2</option><option value="Q3">Q3</option><option value="Q4">Q4</option></select><select id="branch"><option value="all">Todas as branches</option></select><input id="search" placeholder="Buscar cliente, destino, origem, master..." /></section>
+  <section class="kpis" id="kpis"></section>
+  <section class="grid"><div class="card"><div class="card-top"><h3>TEUs por Semana do Ano</h3><span class="note">Semana calculada pela ETA</span></div><div class="chart" id="weeklyChart"><div class="empty">Carregando dados...</div></div></div><div class="card"><div class="card-top"><h3>Performance por Quarter</h3><span class="note" id="quarterNote"></span></div><div id="quarterChart"></div></div></section>
+  <section class="split"><div class="card"><div class="card-top"><h3>Top Clientes / Exportadores</h3><span class="note">TEUs</span></div><div id="customerTable"></div></div><div class="card"><div class="card-top"><h3>Top Destinos</h3><span class="note">TEUs</span></div><div id="destTable"></div></div></section>
+</div>
+<script>
+const PATHS = { 2025: 'data/report-2025.xlsx', 2026: 'data/report-2026.xlsx' };
+let RAW = [], FILTERED = [];
+const $ = id => document.getElementById(id);
+const norm = s => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase().replace(/[^a-z0-9]+/g,' ');
+const num = v => { if(v==null || v==='') return 0; if(typeof v==='number') return isFinite(v)?v:0; let s=String(v).replace(/\s/g,'').replace(/\./g,'').replace(',', '.'); let n=parseFloat(s); return isFinite(n)?n:0; };
+function excelDate(v){
+  if(v instanceof Date && !isNaN(v)) return v;
+  if(typeof v === 'number' && isFinite(v)){ const d = new Date(Math.round((v - 25569) * 86400 * 1000)); return isNaN(d)?null:d; }
+  if(!v) return null; let s=String(v).trim(); if(!s) return null;
+  let m=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/); if(m){ let a=+m[1], b=+m[2], y=+m[3]; if(y<100)y+=2000; let d = a>12 ? new Date(y,b-1,a) : new Date(y,a-1,b); return isNaN(d)?null:d; }
+  let d=new Date(s); return isNaN(d)?null:d;
+}
+function isoWeek(d){ const x=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())); const day=x.getUTCDay()||7; x.setUTCDate(x.getUTCDate()+4-day); const yearStart=new Date(Date.UTC(x.getUTCFullYear(),0,1)); return Math.ceil((((x-yearStart)/86400000)+1)/7); }
+function qtr(d){ return 'Q'+(Math.floor(d.getMonth()/3)+1); }
+function fmt(n,dec=1){ return (n||0).toLocaleString('pt-BR',{minimumFractionDigits:dec,maximumFractionDigits:dec}); }
+function pct(n){ if(!isFinite(n)) return '-'; return (n>=0?'+':'')+n.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'; }
+function setStatus(msg){ $('status').innerHTML = msg; }
+async function fetchWorkbook(url){ const r=await fetch(url+'?v='+(Date.now()), {cache:'no-store'}); if(!r.ok) throw new Error(url+' não encontrado ('+r.status+')'); const ab=await r.arrayBuffer(); return XLSX.read(ab,{type:'array', cellDates:true}); }
+function findHeader(rows){ let best=0, score=-1; rows.slice(0,60).forEach((r,i)=>{ const ns=r.map(norm); let sc=0; ns.forEach(c=>{ if(['teu','eta','eta date','service level','service line','branch','customer','master','last disch','port of destination'].includes(c)) sc+=2; if(c.includes('teu')||c.includes('eta')) sc+=3; }); if(sc>score){score=sc; best=i;} }); return best; }
+function pick(obj, names){ const keys=Object.keys(obj); for(const name of names){ const wanted=norm(name); const exact=keys.find(k=>norm(k)===wanted); if(exact) return obj[exact]; const incl=keys.find(k=>norm(k).includes(wanted)||wanted.includes(norm(k))); if(incl) return obj[incl]; } return null; }
+function sheetRecords(wb, preferred){ const ws = wb.Sheets[preferred] || wb.Sheets[wb.SheetNames[0]]; const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null,raw:true}); const h=findHeader(rows); const headers=rows[h].map((v,i)=> v==null || v==='' ? '__blank_'+i : String(v).trim()); return rows.slice(h+1).map(r=>{let o={}; headers.forEach((hh,i)=>o[hh]=r[i]); return o;}); }
+function parseWorkbook(wb, year){
+  const preferred = year===2025 ? 'Base de dados' : 'ConsolProfileReport';
+  const records=sheetRecords(wb, preferred); const out=[];
+  for(const r of records){
+    let service = pick(r,['Service Line','Service Level','service']);
+    if(year===2026 && String(service||'').trim().toUpperCase() !== 'COC') continue;
+    const date = excelDate(pick(r,['ETA','ETA date','Last Leg Disch ETA'])); if(!date || date.getFullYear()!==year) continue;
+    const teu = num(pick(r,['TEU','TEUs'])); if(!teu) continue;
+    out.push({year, eta:date, week:isoWeek(date), quarter:qtr(date), teu, branch:String(pick(r,['Branch','Department ID','Cost Center'])||'N/A').trim()||'N/A', customer:String(pick(r,['Customer','Principal Name','Shipper Partner Name','Sending Agent','Send Agent','Carrier'])||'N/A').trim()||'N/A', dest:String(pick(r,['Last Disch','Port Of Destination','Port Of Destination Country','Last Disch Country','Consignee Partner Name'])||'N/A').trim()||'N/A', origin:String(pick(r,['First Load','Port Of Departure','First Load Country'])||'N/A').trim()||'N/A', master:String(pick(r,['Master','Consol ID','House'])||'').trim(), service:String(service||'').trim()});
+  }
+  return out;
+}
+async function loadAll(){
+  try{ setStatus('Carregando biblioteca...'); await window.__xlsxReady; setStatus('Lendo arquivos...'); const [wb25, wb26]=await Promise.all([fetchWorkbook(PATHS[2025]), fetchWorkbook(PATHS[2026])]); RAW=[...parseWorkbook(wb25,2025),...parseWorkbook(wb26,2026)]; if(!RAW.length) throw new Error('Nenhuma linha válida encontrada. Confira ETA, TEU e COC.'); initFilters(); render(); setStatus(`<b>${RAW.length.toLocaleString('pt-BR')}</b> registros carregados<br>2025: ${RAW.filter(d=>d.year===2025).length.toLocaleString('pt-BR')} | 2026 COC: ${RAW.filter(d=>d.year===2026).length.toLocaleString('pt-BR')}`); }
+  catch(e){ console.error(e); setStatus(`<b style="color:#b42318">Erro ao carregar</b><br>${e.message}<br><span style="font-size:11px">Use “Selecionar arquivos” ou confira nomes: data/report-2025.xlsx e data/report-2026.xlsx</span>`); $('weeklyChart').innerHTML='<div class="empty">Não foi possível carregar os dados automaticamente.</div>'; }
+}
+async function loadManual(){ try{ await window.__xlsxReady; const f25=$('file2025').files[0], f26=$('file2026').files[0]; if(!f25||!f26) throw new Error('Selecione os dois arquivos.'); const read=f=>new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(XLSX.read(fr.result,{type:'array',cellDates:true}));fr.onerror=rej;fr.readAsArrayBuffer(f);}); const [wb25,wb26]=await Promise.all([read(f25),read(f26)]); RAW=[...parseWorkbook(wb25,2025),...parseWorkbook(wb26,2026)]; initFilters(); render(); setStatus(`<b>${RAW.length.toLocaleString('pt-BR')}</b> registros carregados manualmente`); }catch(e){ setStatus(`<b style="color:#b42318">Erro</b><br>${e.message}`); } }
+function initFilters(){ const branches=[...new Set(RAW.map(d=>d.branch).filter(Boolean))].sort(); $('branch').innerHTML='<option value="all">Todas as branches</option>'+branches.map(b=>`<option>${b}</option>`).join(''); }
+function getFiltered(){ const view=$('view').value, period=$('period').value, quarter=$('quarter').value, branch=$('branch').value, search=norm($('search').value); let data=RAW.slice(); if(view!=='compare') data=data.filter(d=>String(d.year)===view); if(quarter!=='all') data=data.filter(d=>d.quarter===quarter); if(branch!=='all') data=data.filter(d=>d.branch===branch); if(period==='ytdComparable'){ const maxW=Math.max(0,...RAW.filter(d=>d.year===2026).map(d=>d.week)); if(maxW) data=data.filter(d=>d.week<=maxW); } if(search) data=data.filter(d=>norm([d.customer,d.dest,d.origin,d.master,d.branch].join(' ')).includes(search)); return data; }
+function sum(data, year){ return data.filter(d=>!year||d.year===year).reduce((a,b)=>a+b.teu,0); }
+function group(data, key, year){ const m={}; data.filter(d=>!year||d.year===year).forEach(d=>{const k=typeof key==='function'?key(d):d[key]; m[k]=(m[k]||0)+d.teu}); return m; }
+function render(){ FILTERED=getFiltered(); renderKpis(); renderWeekly(); renderQuarter(); renderTables(); }
+function renderKpis(){ const total=sum(FILTERED), t25=sum(FILTERED,2025), t26=sum(FILTERED,2026), delta=t25?((t26-t25)/t25*100):NaN; const weeks=[...new Set(FILTERED.map(d=>d.year+'-'+d.week))].length; const avg=weeks?total/weeks:0; const q=group(FILTERED,'quarter'); const bestQ=Object.entries(q).sort((a,b)=>b[1]-a[1])[0]||['-',0]; const b=group(FILTERED,'branch'); const bestB=Object.entries(b).sort((a,b)=>b[1]-a[1])[0]||['-',0]; const k=[['TEUs Total',fmt(total),'Base filtrada'],['TEUs 2025',fmt(t25),'Histórico comparável'],['TEUs 2026',fmt(t26),'COC / ETA'],['Variação YoY',pct(delta), t26>=t25?'Acima de 2025':'Abaixo de 2025', delta>=0?'up':'down'],['Média semanal',fmt(avg),'TEUs por semana'],['Maior quarter',bestQ[0],fmt(bestQ[1])+' TEUs'],['Top branch',bestB[0],fmt(bestB[1])+' TEUs']]; $('kpis').innerHTML=k.map(x=>`<div class="kpi"><div class="label">${x[0]}</div><div class="value ${x[3]?('delta '+x[3]):''}">${x[1]}</div><div class="sub">${x[2]}</div></div>`).join(''); }
+function renderWeekly(){ const weeks=[...new Set(FILTERED.map(d=>d.week))].sort((a,b)=>a-b); if(!weeks.length){$('weeklyChart').innerHTML='<div class="empty">Sem dados para os filtros selecionados.</div>';return;} const by25=group(FILTERED,'week',2025), by26=group(FILTERED,'week',2026); const max=Math.max(1,...weeks.map(w=>Math.max(by25[w]||0,by26[w]||0))); const W=$('weeklyChart').clientWidth||900,H=330,pad={l:45,r:20,t:20,b:40}, iw=W-pad.l-pad.r, ih=H-pad.t-pad.b; const x=i=>pad.l+(weeks.length<=1?iw/2:i*iw/(weeks.length-1)); const y=v=>pad.t+ih-(v/max)*ih; const pts=(obj)=>weeks.map((w,i)=>`${x(i)},${y(obj[w]||0)}`).join(' '); let bars=''; weeks.forEach((w,i)=>{ const v25=by25[w]||0, v26=by26[w]||0; const bw=Math.max(5, iw/weeks.length/3); bars+=`<rect x="${x(i)-bw-1}" y="${y(v25)}" width="${bw}" height="${pad.t+ih-y(v25)}" rx="3" fill="#8fb5df"><title>Semana ${w} | 2025: ${fmt(v25)}</title></rect><rect x="${x(i)+1}" y="${y(v26)}" width="${bw}" height="${pad.t+ih-y(v26)}" rx="3" fill="#002664"><title>Semana ${w} | 2026: ${fmt(v26)}</title></rect>`; }); let labels=weeks.filter((_,i)=> i%Math.ceil(weeks.length/10)===0 || i===weeks.length-1).map((w,i)=>`<text x="${x(weeks.indexOf(w))}" y="${H-14}" text-anchor="middle" font-size="11" fill="#63728a">W${w}</text>`).join(''); $('weeklyChart').innerHTML=`<svg class="svgchart" width="100%" height="330" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><line x1="${pad.l}" y1="${pad.t+ih}" x2="${W-pad.r}" y2="${pad.t+ih}" stroke="#dbe4ef"/><text x="${pad.l}" y="14" font-size="11" fill="#63728a">TEUs</text>${bars}<polyline points="${pts(by25)}" fill="none" stroke="#7da7d8" stroke-width="2"/><polyline points="${pts(by26)}" fill="none" stroke="#002664" stroke-width="3"/>${labels}</svg><div class="note" style="margin-top:6px"><b style="color:#002664">■ 2026</b> &nbsp; <b style="color:#7da7d8">■ 2025</b></div>`; }
+function renderQuarter(){ const q25=group(FILTERED,'quarter',2025), q26=group(FILTERED,'quarter',2026), qs=['Q1','Q2','Q3','Q4']; const max=Math.max(1,...qs.map(q=>Math.max(q25[q]||0,q26[q]||0))); $('quarterChart').innerHTML=qs.map(q=>`<div style="margin:18px 0"><div class="bar-row"><div class="bar-label">${q} 2026</div><div class="bar-track"><div class="bar" style="width:${(q26[q]||0)/max*100}%"></div></div><div class="bar-val">${fmt(q26[q]||0)}</div></div><div class="bar-row"><div class="bar-label">${q} 2025</div><div class="bar-track"><div class="bar alt" style="width:${(q25[q]||0)/max*100}%"></div></div><div class="bar-val">${fmt(q25[q]||0)}</div></div></div>`).join('') || '<div class="empty">Sem dados.</div>'; }
+function renderTables(){ renderTable('customerTable', group(FILTERED,'customer'), 'Cliente / Exportador'); renderTable('destTable', group(FILTERED,'dest'), 'Destino'); }
+function renderTable(id, obj, label){ const rows=Object.entries(obj).filter(([k])=>k&&k!=='N/A').sort((a,b)=>b[1]-a[1]).slice(0,10); $(id).innerHTML= rows.length?`<table class="table"><thead><tr><th>${label}</th><th>TEUs</th><th>%</th></tr></thead><tbody>${rows.map(([k,v])=>`<tr><td>${k}</td><td>${fmt(v)}</td><td>${fmt(v/(sum(FILTERED)||1)*100,1)}%</td></tr>`).join('')}</tbody></table>`:'<div class="empty">Sem dados.</div>'; }
+['view','period','quarter','branch','search'].forEach(id=>$(id).addEventListener('input',render)); $('reloadBtn').onclick=loadAll; $('manualBtn').onclick=()=>{$('fileBox').style.display=$('fileBox').style.display==='flex'?'none':'flex'}; $('loadManual').onclick=loadManual; window.addEventListener('resize',()=>{if(FILTERED.length) renderWeekly()}); loadAll();
+</script>
+</body>
+</html>
